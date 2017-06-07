@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/wait_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"
+        android:padding="8dp"
+        android:visibility="gone"
+        android:background="@drawable/shape_wait_layout"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="跳过"
+            android:textColor="@android:color/black" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_margin="4dp"
+            android:background="@android:color/black" />
+
+        <TextView
+            android:id="@+id/wait_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3秒"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+</RelativeLayout>
