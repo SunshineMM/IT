@@ -76,26 +76,16 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
                 Map<String,String> map=new HashMap<>();
                 map.put("username",tilUserName.getEditText().getText().toString());
                 map.put("password",tilPassWord.getEditText().getText().toString());
-                HttpUtil.doPost(Constant.URL_POST_USER_LOGIN, map, new NetListener.HttpCallbackListener() {
+                HttpUtil.doPost(LoginActivity.this,Constant.URL_POST_USER_LOGIN, map, new NetListener.HttpCallbackListener() {
                     @Override
                     public void onFinish(Response response) {
                         try {
                             JSONObject jsonObject= new JSONObject(response.body().string());
                             if (jsonObject.getBoolean("state")){
                                 ITApplication.getInstance().setCurrUser(JsonUtil.jsonToBean(jsonObject.getString("result"), User.class));
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                                Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
                             }else {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(LoginActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                                Toast.makeText(LoginActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
                             }
                             pd.dismiss();
                         } catch (IOException | JSONException e) {
@@ -105,13 +95,8 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
 
                     @Override
                     public void onError(Exception e) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                pd.dismiss();
-                                Toast.makeText(LoginActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        pd.dismiss();
+                        Toast.makeText(LoginActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
                     }
                 });
                 break;
