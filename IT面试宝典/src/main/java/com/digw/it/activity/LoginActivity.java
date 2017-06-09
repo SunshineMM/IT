@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.view.MenuItem;
@@ -16,21 +17,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.digw.it.Constant;
-import com.digw.it.ITApplication;
 import com.digw.it.R;
-import com.digw.it.entity.User;
-import com.digw.it.util.JsonUtil;
-import com.digw.it.util.net.HttpUtil;
-import com.digw.it.util.net.NetListener;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-import okhttp3.Response;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 public class LoginActivity extends BaseActivity implements TextureView.SurfaceTextureListener {
     private TextureView textureView;
@@ -72,7 +69,7 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
                 startActivity(RegisterActivity.class);
                 break;
             case R.id.login_btn:
-                pd.show();
+                /*pd.show();
                 Map<String,String> map=new HashMap<>();
                 map.put("username",tilUserName.getEditText().getText().toString());
                 map.put("password",tilPassWord.getEditText().getText().toString());
@@ -98,7 +95,9 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
                         pd.dismiss();
                         Toast.makeText(LoginActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
                     }
-                });
+                });*/
+                MyAsyncTask m=new MyAsyncTask();
+                m.execute(tilUserName.getEditText().getText().toString(),tilPassWord.getEditText().getText().toString());
                 break;
         }
     }
@@ -180,4 +179,45 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
         return super.onOptionsItemSelected(item);
     }
 
+    class MyAsyncTask extends AsyncTask<String,Integer,String>{
+
+        @Override
+        protected void onPreExecute() {
+            pd.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String result="";
+            OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS).build();
+            Map<String,String> map=new HashMap<>();
+            map.put("username",params[0]);
+            map.put("password",params[1]);
+            FormBody.Builder builder = new FormBody.Builder();
+            if (null != map) {
+                for (Map.Entry<String, String> entry : map.entrySet()) {
+                    builder.add(entry.getKey(), entry.getValue());
+                }
+            }
+            RequestBody requestBody = builder.build();
+            Request request = new Request.Builder().url(Constant.URL_POST_USER_LOGIN).post(requestBody).build();
+            try {
+                result=okHttpClient.newCall(request).execute().body().string();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            pd.dismiss();
+            Toast.makeText(LoginActivity.this, ""+s, Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected void onCancelled(String s) {
+            super.onCancelled(s);
+        }
+    }
 }
