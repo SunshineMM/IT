@@ -7,25 +7,33 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.digw.it.Constant;
+import com.digw.it.ITApplication;
 import com.digw.it.R;
+import com.digw.it.entity.User;
+import com.digw.it.util.net.HttpUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
@@ -35,17 +43,17 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
     private Surface mSurface;
 
     private View bgView;
-    private TextInputLayout tilUserName,tilPassWord;
+    private TextInputLayout tilUserName, tilPassWord;
     private TextView tvRegister;
     private Button btnLogin;
     private ProgressDialog pd;
-    private Thread thread=new Thread(){
+    private Thread thread = new Thread() {
         @Override
         public void run() {
             try {
 
-                mediaPlayer=new MediaPlayer();
-                mediaPlayer.setDataSource(getAssets().openFd("bg_login.mp4").getFileDescriptor(),getAssets().openFd("bg_login.mp4").getStartOffset(),getAssets().openFd("bg_login.mp4").getLength());
+                mediaPlayer = new MediaPlayer();
+                mediaPlayer.setDataSource(getAssets().openFd("bg_login.mp4").getFileDescriptor(), getAssets().openFd("bg_login.mp4").getStartOffset(), getAssets().openFd("bg_login.mp4").getLength());
                 mediaPlayer.setSurface(mSurface);
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mediaPlayer.setLooping(true);
@@ -62,50 +70,54 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
         }
     };
 
+    private void cleanEditTextError(){
+        tilUserName.setError(null);
+        tilPassWord.setError(null);
+    }
+
+    private boolean checkFrom() {
+        String emailReg="^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$";
+        String email=tilUserName.getEditText().getText().toString().trim();
+        String password=tilPassWord.getEditText().getText().toString().trim();
+        if (TextUtils.isEmpty(email)){
+            tilUserName.setError("电子邮件不能为空");
+            return false;
+        }
+        Pattern p = Pattern.compile(emailReg);
+        Matcher matcher=p.matcher(email);
+        if (!matcher.matches()){
+            tilUserName.setError("电子邮件格式错误");
+            return false;
+        }
+        if (TextUtils.isEmpty(password)){
+            tilPassWord.setError("密码不能为空");
+            return false;
+        }
+        if (!(password.length()>=6 && password.length() <= 16)){
+            tilPassWord.setError("密码必须大于等于6位并小于等于17位");
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public void viewClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.tv_register:
                 startActivity(RegisterActivity.class);
                 break;
             case R.id.login_btn:
-                /*pd.show();
-                Map<String,String> map=new HashMap<>();
-                map.put("username",tilUserName.getEditText().getText().toString());
-                map.put("password",tilPassWord.getEditText().getText().toString());
-                HttpUtil.doPost(LoginActivity.this,Constant.URL_POST_USER_LOGIN, map, new NetListener.HttpCallbackListener() {
-                    @Override
-                    public void onFinish(Response response) {
-                        try {
-                            JSONObject jsonObject= new JSONObject(response.body().string());
-                            if (jsonObject.getBoolean("state")){
-                                ITApplication.getInstance().setCurrUser(JsonUtil.jsonToBean(jsonObject.getString("result"), User.class));
-                                Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-                            }else {
-                                Toast.makeText(LoginActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
-                            }
-                            pd.dismiss();
-                        } catch (IOException | JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        pd.dismiss();
-                        Toast.makeText(LoginActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
-                    }
-                });*/
-                MyAsyncTask m=new MyAsyncTask();
-                m.execute(tilUserName.getEditText().getText().toString(),tilPassWord.getEditText().getText().toString());
+                if (checkFrom()){
+                    UserLoginAsyncTask m = new UserLoginAsyncTask();
+                    m.execute(tilUserName.getEditText().getText().toString(), tilPassWord.getEditText().getText().toString());
+                }
                 break;
         }
     }
 
     @Override
     public void initParams(Bundle bundle) {
-        setAllowFullScreen(false);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setAllowFullScreen(true);
     }
 
     @Override
@@ -120,13 +132,13 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
 
     @Override
     public void initView(View view) {
-        textureView=$(R.id.texture_view);
-        bgView=$(R.id.bg_view);
-        tilUserName=$(R.id.login_username);
-        tilPassWord=$(R.id.login_password);
-        btnLogin=$(R.id.login_btn);
-        tvRegister=$(R.id.tv_register);
-        pd=new ProgressDialog(this);
+        textureView = $(R.id.texture_view);
+        bgView = $(R.id.bg_view);
+        tilUserName = $(R.id.login_username);
+        tilPassWord = $(R.id.login_password);
+        btnLogin = $(R.id.login_btn);
+        tvRegister = $(R.id.tv_register);
+        pd = new ProgressDialog(this);
         pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         pd.setCancelable(false);
         pd.setCanceledOnTouchOutside(false);
@@ -138,6 +150,38 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
         textureView.setSurfaceTextureListener(this);
         tvRegister.setOnClickListener(this);
         btnLogin.setOnClickListener(this);
+        tilUserName.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                tilUserName.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        tilPassWord.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                tilPassWord.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     @Override
@@ -147,7 +191,7 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        mSurface=new Surface(surface);
+        mSurface = new Surface(surface);
         thread.start();
     }
 
@@ -158,8 +202,8 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        mSurface=null;
-        surface=null;
+        mSurface = null;
+        surface = null;
         mediaPlayer.stop();
         mediaPlayer.release();
         return true;
@@ -172,14 +216,14 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId()==android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    class MyAsyncTask extends AsyncTask<String,Integer,String>{
+    private class UserLoginAsyncTask extends AsyncTask<String, Integer, String> {
 
         @Override
         protected void onPreExecute() {
@@ -188,22 +232,26 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
 
         @Override
         protected String doInBackground(String... params) {
-            String result="";
-            OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS).build();
-            Map<String,String> map=new HashMap<>();
-            map.put("username",params[0]);
-            map.put("password",params[1]);
+            String result = "";
+            JSONObject userJson;
             FormBody.Builder builder = new FormBody.Builder();
-            if (null != map) {
-                for (Map.Entry<String, String> entry : map.entrySet()) {
-                    builder.add(entry.getKey(), entry.getValue());
-                }
-            }
+            builder.add(Constant.LOGIN_REQUEST_KEY_USERNAME, params[0]);
+            builder.add(Constant.LOGIN_REQUEST_KEY_PASSWORD, params[1]);
             RequestBody requestBody = builder.build();
             Request request = new Request.Builder().url(Constant.URL_POST_USER_LOGIN).post(requestBody).build();
             try {
-                result=okHttpClient.newCall(request).execute().body().string();
-            } catch (IOException e) {
+                result = HttpUtil.okHttpClient.newCall(request).execute().body().string();
+                userJson = new JSONObject(result);
+                userJson = userJson.getJSONObject("result");
+                User user = new User();
+                user.setId(userJson.getInt(Constant.UserTable.id));
+                user.setType(userJson.getInt(Constant.UserTable.type));
+                user.setName(userJson.getString(Constant.UserTable.name));
+                user.setEmail(userJson.getString(Constant.UserTable.email));
+                user.setSex(userJson.getString(Constant.UserTable.sex));
+                user.setPassword(userJson.getString(Constant.UserTable.password));
+                ITApplication.getInstance().setCurrUser(user);
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
             return result;
@@ -211,13 +259,23 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
 
         @Override
         protected void onPostExecute(String s) {
-            pd.dismiss();
-            Toast.makeText(LoginActivity.this, ""+s, Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        protected void onCancelled(String s) {
-            super.onCancelled(s);
+            try {
+                pd.dismiss();
+                JSONObject obj = new JSONObject(s);
+                if (obj.getBoolean("state")) {
+                    Snackbar.make(bgView, "登录成功,3秒后返回上一页", Snackbar.LENGTH_SHORT).show();
+                    (new Handler()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            LoginActivity.this.finish();
+                        }
+                    }, 2500);
+                } else {
+                    Snackbar.make(bgView, "登录失败", Snackbar.LENGTH_SHORT).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

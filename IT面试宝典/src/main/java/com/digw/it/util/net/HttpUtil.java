@@ -26,7 +26,7 @@ import okhttp3.Response;
 
 public class HttpUtil {
 
-    private static OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS).build();
+    public static OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS).build();
 
     public static void doGet(String urlPath, final NetListener.HttpCallbackListener listener){
         doGet(null,urlPath,listener);

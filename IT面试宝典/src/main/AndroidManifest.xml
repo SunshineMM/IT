@@ -28,9 +28,11 @@
             android:label="@string/app_name" />
         <activity
             android:name=".activity.LoginActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:label="用户登录" />
         <activity
             android:name=".activity.RegisterActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:label="用户注册" />
         <activity android:name=".activity.NewsInfoActivity" />
     </application>
