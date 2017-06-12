@@ -1,6 +1,8 @@
 package com.digw.it.util.net;
 
 
+import android.app.Activity;
+
 import com.digw.it.util.net.progress.ProgressRequestBody;
 import com.digw.it.util.net.progress.ProgressResponseBody;
 
@@ -24,48 +26,111 @@ import okhttp3.Response;
 
 public class HttpUtil {
 
-    private static OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS).build();
+    public static OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS).build();
 
-    public static void doGet(String urlPath, final NetListener.HttpCallbackListener listener) {
-        Request request = new Request.Builder().url(urlPath).addHeader("User-Agent","Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36").build();
+    public static void doGet(String urlPath, final NetListener.HttpCallbackListener listener){
+        doGet(null,urlPath,listener);
+    }
+
+    public static void doGet(final Activity activity, String urlPath, final NetListener.HttpCallbackListener listener) {
+        Request request = new Request.Builder().url(urlPath).addHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36").build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                listener.onError(e);
+            public void onFailure(Call call, final IOException e) {
+                if (null == activity) {
+                    listener.onError(e);
+                } else {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onError(e);
+                        }
+                    });
+                }
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(Call call, final Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    listener.onError(new IOException("Unexpected code " + response));
+                    if (null == activity) {
+                        listener.onError(new IOException("Unexpected code " + response));
+                    } else {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onError(new IOException("Unexpected code " + response));
+                            }
+                        });
+                    }
                 } else {
-                    listener.onFinish(response);
+                    if (null == activity) {
+                        listener.onFinish(response);
+                    } else {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onFinish(response);
+                            }
+                        });
+                    }
+
                 }
             }
         });
     }
 
-    public static void doPost(String urlPath, Map<String, String> params, final NetListener.HttpCallbackListener listener) {
+    public static void doPost(String urlPath, Map<String, String> params, final NetListener.HttpCallbackListener listener){
+        doPost(null,urlPath,params,listener);
+    }
+
+    public static void doPost(final Activity activity, String urlPath, Map<String, String> params, final NetListener.HttpCallbackListener listener) {
         FormBody.Builder builder = new FormBody.Builder();
         if (null != params) {
             for (Map.Entry<String, String> entry : params.entrySet()) {
-                builder.add(entry.getKey(),entry.getValue());
+                builder.add(entry.getKey(), entry.getValue());
             }
         }
         RequestBody requestBody = builder.build();
         Request request = new Request.Builder().url(urlPath).post(requestBody).build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                listener.onError(e);
+            public void onFailure(Call call, final IOException e) {
+                if (null==activity){
+                    listener.onError(e);
+                }else {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onError(e);
+                        }
+                    });
+                }
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(Call call, final Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    listener.onError(new IOException("Unexpected code " + response));
+                    if (null==activity){
+                        listener.onError(new IOException("Unexpected code " + response));
+                    }else {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onError(new IOException("Unexpected code " + response));
+                            }
+                        });
+                    }
                 } else {
-                    listener.onFinish(response);
+                    if (null==activity){
+                        listener.onFinish(response);
+                    }else {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onFinish(response);
+                            }
+                        });
+                    }
                 }
             }
         });

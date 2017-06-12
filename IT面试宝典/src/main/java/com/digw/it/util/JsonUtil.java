@@ -18,6 +18,10 @@ import java.util.List;
 public class JsonUtil {
     private static Gson gson = new Gson();
 
+    public static Gson getGson(){
+        return gson;
+    }
+
     public static <T>T jsonToBean(String json,Class<T> beanClass){
         T bean=null;
         try {

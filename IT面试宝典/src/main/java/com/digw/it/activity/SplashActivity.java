@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.digw.it.Constant;
 import com.digw.it.ITApplication;
 import com.digw.it.R;
+import com.digw.it.util.ThreadManager;
 
 /**
  * digw创建于17-5-24.
@@ -31,7 +32,8 @@ public class SplashActivity extends BaseActivity {
             switch (msg.what) {
                 case Constant.APP_INIT_DONE:
                     waitLayout.setVisibility(View.VISIBLE);
-                    splashThread.start();
+                    ThreadManager.getPoolProxy().execute(splashThread);
+                    //splashThread.start();
                     break;
             }
         }

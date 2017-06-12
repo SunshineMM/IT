@@ -28,11 +28,15 @@
             android:label="@string/app_name" />
         <activity
             android:name=".activity.LoginActivity"
-            android:label="用户登录" />
+            android:label="用户登录"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".activity.RegisterActivity"
-            android:label="用户注册" />
-        <activity android:name=".activity.NewsInfoActivity" />
+            android:label="用户注册"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
+            android:name=".activity.NewsInfoActivity"
+            android:launchMode="singleInstance" />
     </application>
 
 </manifest>
