@@ -7,18 +7,19 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 
 import com.digw.it.entity.NewsTitle;
-import com.digw.it.entity.SubTitle;
 import com.digw.it.entity.Title;
 import com.digw.it.entity.User;
 import com.digw.it.util.JsonUtil;
 import com.digw.it.util.net.HttpUtil;
 import com.digw.it.util.net.NetListener;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,16 +81,8 @@ public class ITApplication extends Application {
                     if (jsonObject.getBoolean("state")){
                         JSONArray jsonArray=jsonObject.getJSONArray("result");
                         for (int i=0;i<jsonArray.length();i++){
-                            Title title=new Title();
-                            title.setId(jsonArray.getJSONObject(i).getInt("id"));
-                            title.setName(jsonArray.getJSONObject(i).getString("name"));
-                            JSONArray childs=jsonArray.getJSONObject(i).getJSONArray("childData");
-                            ArrayList <SubTitle> subTitles=new ArrayList<>();
-                            for (int j=0;j<childs.length();j++){
-                                SubTitle subTitle = JsonUtil.jsonToBean(childs.getJSONObject(j).toString(),SubTitle.class);
-                                subTitles.add(subTitle);
-                            }
-                            title.setSubTitles(subTitles);
+                            Type type = new TypeToken<Title>() {}.getType();
+                            Title title= JsonUtil.getGson().fromJson(jsonArray.getJSONObject(i).toString(),type);
                             titles.add(title);
                         }
                     }

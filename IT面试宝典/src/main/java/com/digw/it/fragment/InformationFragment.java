@@ -6,20 +6,20 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.digw.it.Constant;
 import com.digw.it.ITApplication;
 import com.digw.it.R;
 import com.digw.it.adapter.NewsRecyclerViewAdapter;
 import com.digw.it.entity.NewsTitle;
+import com.digw.it.util.JsonUtil;
 import com.digw.it.util.net.HttpUtil;
 import com.digw.it.util.net.NetListener;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * digw创建于17-5-24.
@@ -74,34 +74,31 @@ public class InformationFragment extends BaseFragment implements SwipeRefreshLay
         adapter.notifyItemRangeRemoved(0,ITApplication.getInstance().newsTitles.size());
         ITApplication.getInstance().newsTitles.clear();
         //获取资讯列表
-        HttpUtil.doGet("http://c.m.163.com/nc/article/headline/T1348649580692/0-40.html", new NetListener.HttpCallbackListener() {
+        HttpUtil.doGet(Constant.URL_GET_NEWS_LIST, new NetListener.HttpCallbackListener() {
             @Override
             public void onFinish(Response response) {
+                String result=null;
                 try {
-                    JSONObject jsonObj=new JSONObject(response.body().string());
-                    JSONArray jsonArr=jsonObj.getJSONArray("T1348649580692");
+                    ResponseBody body=response.body();
+                    result= body != null ? body.string() : null;
+                    JSONObject jsonObj=new JSONObject(result);
+                    JSONArray jsonArr=jsonObj.getJSONArray(Constant.NEWS_GROUP);
                     for(int i=1;i<jsonArr.length();i++){
                         if (jsonArr.getJSONObject(i).has("url")){
-                            NewsTitle n=new NewsTitle();
-                            n.setTitle(jsonArr.getJSONObject(i).getString("title"));
-                            n.setDigest(jsonArr.getJSONObject(i).getString("digest"));
-                            n.setModify(jsonArr.getJSONObject(i).getString("lmodify"));
-                            n.setSource(jsonArr.getJSONObject(i).getString("source"));
-                            n.setUrl(jsonArr.getJSONObject(i).getString("url"));
-                            n.setImgsrc(jsonArr.getJSONObject(i).getString("imgsrc"));
+                            NewsTitle n= JsonUtil.jsonToBean(jsonArr.getJSONObject(i).toString(),NewsTitle.class);
                             ITApplication.getInstance().newsTitles.add(n);
                         }
                     }
-                } catch (IOException | JSONException e) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.notifyItemRangeChanged(0,ITApplication.getInstance().newsTitles.size());
+                            refreshLayout.setRefreshing(false);
+                        }
+                    });
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        adapter.notifyItemRangeChanged(0,ITApplication.getInstance().newsTitles.size());
-                        refreshLayout.setRefreshing(false);
-                    }
-                });
             }
 
             @Override

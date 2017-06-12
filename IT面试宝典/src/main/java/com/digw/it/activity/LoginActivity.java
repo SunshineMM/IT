@@ -10,10 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.view.MenuItem;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
@@ -24,6 +21,7 @@ import com.digw.it.Constant;
 import com.digw.it.ITApplication;
 import com.digw.it.R;
 import com.digw.it.entity.User;
+import com.digw.it.util.ThreadManager;
 import com.digw.it.util.net.HttpUtil;
 
 import org.json.JSONException;
@@ -37,7 +35,7 @@ import okhttp3.FormBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-public class LoginActivity extends BaseActivity implements TextureView.SurfaceTextureListener {
+public class LoginActivity extends BaseActivity implements TextureView.SurfaceTextureListener, View.OnFocusChangeListener {
     private TextureView textureView;
     private MediaPlayer mediaPlayer;
     private Surface mSurface;
@@ -107,6 +105,7 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
                 startActivity(RegisterActivity.class);
                 break;
             case R.id.login_btn:
+                cleanEditTextError();
                 if (checkFrom()){
                     UserLoginAsyncTask m = new UserLoginAsyncTask();
                     m.execute(tilUserName.getEditText().getText().toString(), tilPassWord.getEditText().getText().toString());
@@ -150,38 +149,8 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
         textureView.setSurfaceTextureListener(this);
         tvRegister.setOnClickListener(this);
         btnLogin.setOnClickListener(this);
-        tilUserName.getEditText().addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                tilUserName.setError(null);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-        tilPassWord.getEditText().addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                tilPassWord.setError(null);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+        /*tilUserName.getEditText().setOnFocusChangeListener(this);
+        tilPassWord.getEditText().setOnFocusChangeListener(this);*/
     }
 
     @Override
@@ -192,7 +161,7 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         mSurface = new Surface(surface);
-        thread.start();
+        ThreadManager.getPoolProxy().execute(thread);
     }
 
     @Override
@@ -215,12 +184,12 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (v.getId()==tilUserName.getEditText().getId()&&hasFocus){
+            tilUserName.setError(null);
+        }else if (v.getId()==tilPassWord.getEditText().getId()&&hasFocus){
+            tilPassWord.setError(null);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     private class UserLoginAsyncTask extends AsyncTask<String, Integer, String> {
