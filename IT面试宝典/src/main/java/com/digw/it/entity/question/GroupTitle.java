@@ -1,4 +1,4 @@
-package com.digw.it.entity;
+package com.digw.it.entity.question;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.List;
  * digw创建于17-6-4.
  */
 
-public class Title {
+public class GroupTitle {
     private int id;
     private String name;
     private List<SubTitle> childData;

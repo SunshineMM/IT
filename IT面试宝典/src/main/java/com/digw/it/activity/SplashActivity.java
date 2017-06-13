@@ -1,7 +1,7 @@
 package com.digw.it.activity;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,6 +13,8 @@ import com.digw.it.Constant;
 import com.digw.it.ITApplication;
 import com.digw.it.R;
 import com.digw.it.util.ThreadManager;
+
+import java.io.IOException;
 
 /**
  * digw创建于17-5-24.
@@ -96,7 +98,11 @@ public class SplashActivity extends BaseActivity {
 
     @Override
     public void initView(View view) {
-        mContextView.setBackgroundColor(Color.BLUE);
+        try {
+            mContextView.setBackground(Drawable.createFromStream(getAssets().open("img_splash.jpg"),null));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         waitLayout = $(R.id.wait_layout);
         waitTv = $(R.id.wait_tv);
         waitTv.setText(SHOW_TIME_MIN + "秒");

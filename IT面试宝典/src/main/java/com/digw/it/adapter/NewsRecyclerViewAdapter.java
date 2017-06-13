@@ -11,7 +11,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.chad.library.adapter.base.animation.BaseAnimation;
 import com.digw.it.ITApplication;
 import com.digw.it.R;
-import com.digw.it.entity.NewsTitle;
+import com.digw.it.entity.news.NewsTitle;
 import com.squareup.picasso.Picasso;
 
 /**
