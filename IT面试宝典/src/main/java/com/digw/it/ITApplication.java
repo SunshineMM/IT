@@ -6,8 +6,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 
-import com.digw.it.entity.NewsTitle;
-import com.digw.it.entity.Title;
+import com.digw.it.entity.news.NewsTitle;
+import com.digw.it.entity.question.GroupTitle;
 import com.digw.it.entity.User;
 import com.digw.it.util.JsonUtil;
 import com.digw.it.util.net.HttpUtil;
@@ -34,7 +34,7 @@ public class ITApplication extends Application {
     private List<Activity> activities = new ArrayList<>();
     private User currUser=null;
     public SharedPreferences userPrf=null;
-    public ArrayList<Title> titles = new ArrayList<>();
+    public ArrayList<GroupTitle> titles = new ArrayList<>();
     public ArrayList<NewsTitle> newsTitles= new ArrayList<>();
     @Override
     public void onCreate() {
@@ -81,8 +81,8 @@ public class ITApplication extends Application {
                     if (jsonObject.getBoolean("state")){
                         JSONArray jsonArray=jsonObject.getJSONArray("result");
                         for (int i=0;i<jsonArray.length();i++){
-                            Type type = new TypeToken<Title>() {}.getType();
-                            Title title= JsonUtil.getGson().fromJson(jsonArray.getJSONObject(i).toString(),type);
+                            Type type = new TypeToken<GroupTitle>() {}.getType();
+                            GroupTitle title= JsonUtil.getGson().fromJson(jsonArray.getJSONObject(i).toString(),type);
                             titles.add(title);
                         }
                     }

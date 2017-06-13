@@ -50,6 +50,33 @@ public class MainActivity extends BaseActivity {
 
     };
 
+    private ViewPager.OnPageChangeListener mOnPageChangeListener=new ViewPager.OnPageChangeListener() {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            switch (position){
+                case 0:
+                    navigation.setSelectedItemId(R.id.nav_assignment);
+                    break;
+                case 1:
+                    navigation.setSelectedItemId(R.id.nav_information);
+                    break;
+                case 2:
+                    navigation.setSelectedItemId(R.id.nav_me);
+                    break;
+            }
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
+    };
+
     @Override
     public void viewClick(View v) {
     }
@@ -93,6 +120,7 @@ public class MainActivity extends BaseActivity {
     @Override
     public void setListener() {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        vpContent.addOnPageChangeListener(mOnPageChangeListener);
     }
 
     @Override

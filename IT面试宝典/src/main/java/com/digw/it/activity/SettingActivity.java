@@ -51,7 +51,6 @@ public class SettingActivity extends BaseActivity {
 
 
     public static class SettingFragment extends PreferenceFragment{
-        private String mAteKey;
 
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {

@@ -40,11 +40,8 @@
             android:parentActivityName=".activity.MainActivity" />
         <activity
             android:name=".activity.SettingActivity"
-            android:label="@string/title_activity_settings" />
-        <activity android:name=".activity.ErrorPracticeActivity">
-
-        </activity>
-        <activity android:name=".activity.ErrorBrowseActivity"></activity>
+            android:label="@string/title_activity_settings"></activity>
+        <activity android:name=".activity.SubjectStartActivity"></activity>
     </application>
 
 </manifest>
