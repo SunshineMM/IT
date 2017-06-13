@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:scrollbars="none"
     tools:context="com.digw.it.fragment.MeFragment">
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,27 +14,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:background="#367F9D"
+            android:background="#fff"
             android:orientation="vertical">
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="40dp">
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-                    <Button
-                        android:layout_marginTop="10dp"
-                        android:layout_marginRight="10dp"
-                        android:id="@+id/btn_set"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:background="@mipmap/icon_setting"
-                        android:layout_alignParentRight="true"
-                        />
-                </RelativeLayout>
-            </LinearLayout>
-
-            <LinearLayout
+                android:layout_marginTop="40dp"
                 android:id="@+id/registerOrLogin"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
@@ -55,7 +39,7 @@
                         android:layout_weight="1"
                         android:text="请登录后查看"
                         android:textSize="18sp"
-                        android:textColor="#fff"/>
+                        />
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
@@ -72,18 +56,9 @@
                             android:gravity="center_vertical"
                             android:layout_marginLeft="10dp"
                             android:textSize="15sp"
-                            android:textColor="#fff"/>
+                            />
                     </LinearLayout>
-
                 </LinearLayout>
-                <ImageView
-                    android:layout_marginRight="20dp"
-                    android:layout_width="0dp"
-                    android:layout_weight="0.2"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:src="@mipmap/btn_y"/>
-
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -102,14 +77,14 @@
                     android:layout_height="match_parent"
                     android:text="关注了 0人"
                     android:gravity="center_vertical"
-                    android:textColor="#fff"
+
                     android:textSize="18sp"/>
                 <TextView
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
                     android:text="|"
-                    android:textColor="#fff"
+
                     android:textSize="30sp"
                     android:gravity="center"/>
                 <ImageView
@@ -125,7 +100,7 @@
                     android:text="关注者 0人"
                     android:layout_marginRight="15dp"
                     android:gravity="center_vertical"
-                    android:textColor="#fff"
+
                     android:textSize="18sp"/>
             </LinearLayout>
 

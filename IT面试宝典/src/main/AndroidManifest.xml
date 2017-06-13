@@ -36,12 +36,15 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".activity.NewsInfoActivity"
-            android:parentActivityName=".activity.MainActivity"
-            android:launchMode="singleInstance" />
+            android:launchMode="singleInstance"
+            android:parentActivityName=".activity.MainActivity" />
         <activity
             android:name=".activity.SettingActivity"
-            android:label="@string/title_activity_settings">
+            android:label="@string/title_activity_settings" />
+        <activity android:name=".activity.ErrorPracticeActivity">
+
         </activity>
+        <activity android:name=".activity.ErrorBrowseActivity"></activity>
     </application>
 
 </manifest>
