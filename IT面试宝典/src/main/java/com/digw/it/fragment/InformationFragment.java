@@ -1,14 +1,17 @@
 package com.digw.it.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.digw.it.Constant;
 import com.digw.it.ITApplication;
 import com.digw.it.R;
+import com.digw.it.activity.NewsInfoActivity;
 import com.digw.it.adapter.NewsRecyclerViewAdapter;
 import com.digw.it.entity.NewsTitle;
 import com.digw.it.util.JsonUtil;
@@ -56,8 +59,15 @@ public class InformationFragment extends BaseFragment implements SwipeRefreshLay
         refreshLayout.setOnRefreshListener(this);
         newsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter=new NewsRecyclerViewAdapter(getContext());
-
         newsRecyclerView.setAdapter(adapter);
+        adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                Intent intent=new Intent(getActivity(), NewsInfoActivity.class);
+                intent.putExtra("news",ITApplication.getInstance().newsTitles.get(position));
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

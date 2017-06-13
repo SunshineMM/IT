@@ -1,13 +1,18 @@
 package com.digw.it.activity;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.digw.it.R;
 import com.digw.it.adapter.ViewPagerAdapter;
@@ -18,7 +23,8 @@ import com.digw.it.fragment.MeFragment;
 import java.util.ArrayList;
 
 public class MainActivity extends BaseActivity {
-    private ArrayList<Fragment> fragments=new ArrayList<>();
+    private Toolbar toolbar;
+    private ArrayList<Fragment> fragments = new ArrayList<>();
     private BottomNavigationView navigation;
     private ViewPager vpContent;
     private ViewPagerAdapter viewPagerAdapter;
@@ -50,10 +56,19 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void initParams(Bundle bundle) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+                    | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.TRANSPARENT);
+        }
         fragments.add(new AssignmentFragment());
         fragments.add(new InformationFragment());
         fragments.add(new MeFragment());
-        viewPagerAdapter=new ViewPagerAdapter(getSupportFragmentManager(),fragments);
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
     }
 
     @Override
@@ -68,8 +83,10 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void initView(View view) {
+        toolbar = $(R.id.toolbar);
+        setSupportActionBar(toolbar);
         navigation = $(R.id.navigation);
-        vpContent=$(R.id.content);
+        vpContent = $(R.id.content);
         vpContent.setAdapter(viewPagerAdapter);
     }
 

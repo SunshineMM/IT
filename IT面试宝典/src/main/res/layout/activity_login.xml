@@ -43,8 +43,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="请输入电子邮件"
-                    android:inputType="textEmailAddress"
-                    android:tag="bg_tint_primary_color_selector_lighter,text_primary_color" />
+                    android:inputType="textEmailAddress" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -59,8 +58,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="请输入密码"
-                    android:inputType="textPassword"
-                    android:tag="bg_tint_primary_color_selector_lighter,text_primary_color" />
+                    android:backgroundTint="@color/colorPrimary"
+                    android:inputType="textPassword" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -71,7 +70,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginBottom="15dp"
                 android:textSize="@dimen/sp_12"
-                android:tag="text_primary_color"
+                android:textColor="@color/colorPrimary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -80,7 +79,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:tag="bg_tint_primary_color_selector_lighter"
+                android:textColor="@android:color/white"
+                android:backgroundTint="@color/colorPrimary"
                 android:text="登录" />
 
         </LinearLayout>

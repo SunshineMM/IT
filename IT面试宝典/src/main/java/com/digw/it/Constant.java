@@ -23,6 +23,7 @@ public class Constant {
     public static int NEWS_LIST_START_NUM=0;
     public static int NEWS_LIST_END_NUM=40;
     public static final String URL_GET_NEWS_LIST="http://c.m.163.com/nc/article/headline/"+NEWS_GROUP+"/"+NEWS_LIST_START_NUM+"-"+NEWS_LIST_END_NUM+".html";
+    public static final String URL_PREFIX_NEWS_INFO="http://3g.163.com/news/article/";
 
     public static final String LOGIN_REQUEST_KEY_USERNAME="username";
     public static final String LOGIN_REQUEST_KEY_PASSWORD="password";

@@ -1,13 +1,15 @@
 package com.digw.it.entity;
 
+import java.io.Serializable;
+
 /**
  * digw创建于17-6-6.
  */
 
-public class NewsTitle {
+public class NewsTitle implements Serializable{
     private String title;
     private String digest;
-    private String url;
+    private String postid;
     private String source;
     private String modify;
     private String imgsrc;
@@ -28,12 +30,12 @@ public class NewsTitle {
         this.digest = digest;
     }
 
-    public String getUrl() {
-        return url;
+    public String getPostid() {
+        return postid;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setPostid(String postid) {
+        this.postid = postid;
     }
 
     public String getSource() {

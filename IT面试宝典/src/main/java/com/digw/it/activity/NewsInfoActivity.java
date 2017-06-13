@@ -2,16 +2,29 @@ package com.digw.it.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.ProgressBar;
 
+import com.digw.it.Constant;
 import com.digw.it.R;
+import com.digw.it.entity.NewsTitle;
+import com.digw.it.util.JsoupUtil;
+
+import org.jsoup.nodes.Document;
 
 public class NewsInfoActivity extends BaseActivity {
+    private Toolbar toolbar;
+    private ProgressBar loadingProgress;
     private WebView webView;
     private WebSettings webSettings;
+    private NewsTitle news;
 
     @Override
     public void viewClick(View v) {
@@ -19,8 +32,14 @@ public class NewsInfoActivity extends BaseActivity {
     }
 
     @Override
-    public void initParams(Bundle bundle) {
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        news= (NewsTitle) getIntent().getSerializableExtra("news");
+    }
 
+    @Override
+    public void initParams(Bundle bundle) {
+        news= (NewsTitle) getIntent().getSerializableExtra("news");
     }
 
     @Override
@@ -36,6 +55,11 @@ public class NewsInfoActivity extends BaseActivity {
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     public void initView(View view) {
+        toolbar=$(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        loadingProgress=$(R.id.loading_progress);
         webView=$(R.id.web_view);
         webSettings=webView.getSettings();
 
@@ -57,8 +81,17 @@ public class NewsInfoActivity extends BaseActivity {
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true); //支持通过JS打开新窗口
         webSettings.setLoadsImagesAutomatically(true); //支持自动加载图片
         webSettings.setDefaultTextEncodingName("utf-8");//设置编码格式
-
-
+        webView.setWebChromeClient(new WebChromeClient(){
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                if (newProgress==100){
+                    loadingProgress.setVisibility(View.GONE);
+                }else {
+                    loadingProgress.setVisibility(View.VISIBLE);
+                    loadingProgress.setProgress(newProgress);
+                }
+            }
+        });
     }
 
     @Override
@@ -69,5 +102,47 @@ public class NewsInfoActivity extends BaseActivity {
     @Override
     public void doBusiness(Context mContext) {
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getSupportActionBar().setTitle(news.getTitle());
+        getUrlContext();
+        //webView.loadUrl(Constant.URL_PREFIX_NEWS_INFO+news.getPostid()+".html");
+        //Log.e(TAG, "onResume: "+webView.getUrl());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId()==android.R.id.home){
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void getUrlContext(){
+        JsoupUtil.getDocumentByUrl(Constant.URL_PREFIX_NEWS_INFO+news.getPostid()+".html", new JsoupUtil.JsoupCallbackListener() {
+            @Override
+            public void onFinish(final Document document) {
+                document.select("div.a_adtemp.a_topad.js-topad").remove();
+                document.select("div.relative_doc.relativedoc-"+news.getPostid()).remove();
+                document.select("div.doc-footer-wrapper").remove();
+                document.select("a.more_client.more-client").remove();
+                document.select("section.article_comment.tie-"+news.getPostid()).remove();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        webView.loadDataWithBaseURL(document.baseUri(),document.html(),"text/html","UTF-8",null);
+                    }
+                });
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        });
     }
 }

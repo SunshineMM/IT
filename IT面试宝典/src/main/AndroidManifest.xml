@@ -16,7 +16,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".activity.SplashActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,14 +29,19 @@
         <activity
             android:name=".activity.LoginActivity"
             android:label="用户登录"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".activity.RegisterActivity"
             android:label="用户注册"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".activity.NewsInfoActivity"
+            android:parentActivityName=".activity.MainActivity"
             android:launchMode="singleInstance" />
+        <activity
+            android:name=".activity.SettingActivity"
+            android:label="@string/title_activity_settings">
+        </activity>
     </application>
 
 </manifest>

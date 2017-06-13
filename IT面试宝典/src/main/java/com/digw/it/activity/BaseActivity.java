@@ -5,18 +5,18 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.afollestad.appthemeengine.ATEActivity;
 import com.digw.it.Constant;
 import com.digw.it.ITApplication;
 
 
-public abstract class BaseActivity extends ATEActivity implements View.OnClickListener{
+public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener{
     /*设置TAG*/
     protected final String TAG = this.getClass().getSimpleName();
     /*是否是Debug版本*/
@@ -68,8 +68,8 @@ public abstract class BaseActivity extends ATEActivity implements View.OnClickLi
     }
 
     /*
-        * 初始化参数
-        * */
+            * 初始化参数
+            * */
     public abstract void initParams(Bundle bundle);
 
     /*

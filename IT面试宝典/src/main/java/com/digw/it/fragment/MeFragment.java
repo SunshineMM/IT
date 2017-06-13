@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.digw.it.R;
 import com.digw.it.activity.LoginActivity;
+import com.digw.it.activity.SettingActivity;
 
 /**
  * digw创建于17-5-24.
@@ -23,8 +24,9 @@ public class MeFragment extends BaseFragment {
             collect_topic,    //收藏题目
             collect_comment,     //收藏帖子
             my_download,            //我的下载
-            punch_card ;         //我的打卡
+            punch_card;         //我的打卡
     private TextView set_tv;//设置
+
     @Override
     public View bindView() {
         return null;
@@ -37,62 +39,63 @@ public class MeFragment extends BaseFragment {
 
     @Override
     public void initView(View view) {
-        registerOrLogin=$(R.id.registerOrLogin);
-        error_practice=$(R.id.error_practice);      //错题练习
-        error_browse=$(R.id.error_browse);            //错题浏览
-        practice_test=$(R.id.practice_test);         //练习试卷
-        answer_question=$(R.id.answer_question);    //回答问题
-        comment=$(R.id.comment);                       //发表帖子
-        collect_topic=$(R.id.collect_topic);        //收藏题目
-        collect_comment=$(R.id.collect_comment);    //收藏帖子
-        my_download=$(R.id.my_download);            //我的下载
-        punch_card=$(R.id.punch_card);              //我的打卡
-        set_tv=$(R.id.set_tv);                         //设置
+        registerOrLogin = $(R.id.registerOrLogin);
+        error_practice = $(R.id.error_practice);      //错题练习
+        error_browse = $(R.id.error_browse);            //错题浏览
+        practice_test = $(R.id.practice_test);         //练习试卷
+        answer_question = $(R.id.answer_question);    //回答问题
+        comment = $(R.id.comment);                       //发表帖子
+        collect_topic = $(R.id.collect_topic);        //收藏题目
+        collect_comment = $(R.id.collect_comment);    //收藏帖子
+        my_download = $(R.id.my_download);            //我的下载
+        punch_card = $(R.id.punch_card);              //我的打卡
+        set_tv = $(R.id.set_tv);                         //设置
     }
 
     @Override
     public void viewClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.registerOrLogin:
                 startActivity(new Intent(getActivity(), LoginActivity.class));
                 break;
             case R.id.error_practice:
                 //错题练习
-                startActivity(new Intent(getActivity(),LoginActivity.class));
+                startActivity(new Intent(getActivity(), LoginActivity.class));
                 break;
             case R.id.error_browse:
                 //错题浏览
-                startActivity(new Intent(getActivity(),LoginActivity.class));
+                startActivity(new Intent(getActivity(), LoginActivity.class));
                 break;
             case R.id.practice_test:
                 //练习测试
-                startActivity(new Intent(getActivity(),LoginActivity.class));
+                startActivity(new Intent(getActivity(), LoginActivity.class));
                 break;
             case R.id.answer_question:
                 //回答问题
-                startActivity(new Intent(getActivity(),LoginActivity.class));
+                startActivity(new Intent(getActivity(), LoginActivity.class));
                 break;
             case R.id.comment:
                 //发表帖子
-                startActivity(new Intent(getActivity(),LoginActivity.class));
+                startActivity(new Intent(getActivity(), LoginActivity.class));
                 break;
             case R.id.collect_topic:
                 //收藏题目
-                startActivity(new Intent(getActivity(),LoginActivity.class));
+                startActivity(new Intent(getActivity(), LoginActivity.class));
                 break;
             case R.id.collect_comment:
                 //收藏帖子
-                startActivity(new Intent(getActivity(),LoginActivity.class));
+                startActivity(new Intent(getActivity(), LoginActivity.class));
                 break;
             case R.id.my_download:
                 //我的下载
-                startActivity(new Intent(getActivity(),LoginActivity.class));
+                startActivity(new Intent(getActivity(), LoginActivity.class));
                 break;
             case R.id.punch_card:
                 //我的打卡
-                startActivity(new Intent(getActivity(),LoginActivity.class));
+                startActivity(new Intent(getActivity(), LoginActivity.class));
                 break;
             case R.id.set_tv:
+                startActivity(new Intent(getActivity(), SettingActivity.class));
                 break;
             default:
                 break;

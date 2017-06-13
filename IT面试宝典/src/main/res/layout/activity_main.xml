@@ -8,6 +8,18 @@
     android:orientation="vertical"
     tools:context="com.digw.it.activity.MainActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:elevation="2dp"
+        android:fitsSystemWindows="true"
+        android:minHeight="?attr/actionBarSize"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:titleTextColor="#fff" />
+
     <android.support.v4.view.ViewPager
         android:id="@+id/content"
         android:layout_width="match_parent"
@@ -22,6 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="?android:attr/windowBackground"
+
         app:menu="@menu/navigation" />
 
 </LinearLayout>
