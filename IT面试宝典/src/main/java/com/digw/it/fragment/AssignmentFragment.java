@@ -1,6 +1,7 @@
 package com.digw.it.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,9 +11,9 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.digw.it.Constant;
 import com.digw.it.ITApplication;
 import com.digw.it.R;
+import com.digw.it.activity.SubjectStartActivity;
 import com.digw.it.adapter.DataRecyclerViewAdapter;
 import com.digw.it.entity.question.GroupTitle;
-import com.digw.it.entity.question.QuestionInfo;
 import com.digw.it.entity.question.QuestionRequestResult;
 import com.digw.it.entity.question.SectionTitle;
 import com.digw.it.util.JsonUtil;
@@ -122,11 +123,9 @@ public class AssignmentFragment extends BaseFragment implements BaseQuickAdapter
                 JSONObject resultJson=new JSONObject(s);
                 if (resultJson.getInt("code")==0&&resultJson.getString("msg").equals("OK")){
                     QuestionRequestResult q= JsonUtil.jsonToBean(resultJson.getJSONObject("data").toString(),QuestionRequestResult.class);
-                    StringBuffer sb=new StringBuffer();
-                    for (QuestionInfo qs:q.getAllQuestion()) {
-                        sb.append(qs.getQuestion().getTitle()+"\n");
-                    }
-                    showToast(sb.toString());
+                    Intent intent=new Intent(getActivity(), SubjectStartActivity.class);
+                    intent.putExtra("question",q);
+                    startActivity(intent);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

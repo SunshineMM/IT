@@ -1,4 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <PreferenceCategory
+        android:title="基本设置">
+        <ListPreference
+            android:key="fontsize"
+            android:title="字体大小"
+            android:summary="中"
+            android:entries="@array/fontsize"
+            android:entryValues="@array/fontsize"
+            android:defaultValue="2"
+            android:dialogTitle="选择一个" />
+        <SwitchPreference
+            android:key="wifi"
+            android:title="非wif不加载图片">
+
+        </SwitchPreference>
+        <SwitchPreference
+            android:title="推送">
+
+        </SwitchPreference>
+        <SwitchPreference
+            android:title="夜间模式">
+
+        </SwitchPreference>
+        <PreferenceScreen android:title="清楚缓存"
+            android:summary="缓存大小">
+        </PreferenceScreen>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="其他">
+        <PreferenceScreen android:title="关于我">
+
+        </PreferenceScreen>
+        <PreferenceScreen android:title="捐赠">
+
+        </PreferenceScreen>
+        <PreferenceScreen android:title="版本信息">
+
+        </PreferenceScreen>
+        <EditTextPreference android:title="意见反馈"
+            android:dialogTitle="输入你的意见" >
+
+        </EditTextPreference>
+    </PreferenceCategory>
 </PreferenceScreen>
