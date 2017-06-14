@@ -1,12 +1,13 @@
 package com.digw.it.entity.question;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * digw创建于17-6-13.
  */
 
-public class QuestionInfo {
+public class QuestionInfo implements Serializable{
     private double score;
     private Question question;
     private int pos;
@@ -35,7 +36,7 @@ public class QuestionInfo {
         this.pos = pos;
     }
 
-    public class Question{
+    public class Question implements Serializable{
         private String content;
         private int id;
         private String title;
@@ -91,7 +92,7 @@ public class QuestionInfo {
             this.type = type;
         }
 
-        public class Answer{
+        public class Answer implements Serializable{
             private String content;
             private int id;
             private int type;

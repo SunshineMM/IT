@@ -1,11 +1,13 @@
 package com.digw.it.entity.question;
 
+import java.io.Serializable;
+
 /**
  * digw创建于17-6-13.
  * QuestionRequestResult->Paper
  */
 
-public class Paper {
+public class Paper implements Serializable{
     private int id;
     private long duration;
     private String paperName;
