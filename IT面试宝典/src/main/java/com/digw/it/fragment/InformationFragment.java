@@ -13,7 +13,7 @@ import com.digw.it.ITApplication;
 import com.digw.it.R;
 import com.digw.it.activity.NewsInfoActivity;
 import com.digw.it.adapter.NewsRecyclerViewAdapter;
-import com.digw.it.entity.NewsTitle;
+import com.digw.it.entity.news.NewsTitle;
 import com.digw.it.util.JsonUtil;
 import com.digw.it.util.net.HttpUtil;
 import com.digw.it.util.net.NetListener;
