@@ -7,6 +7,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.digw.it.R;
+import com.digw.it.activity.Clock_Activity;
 import com.digw.it.activity.LoginActivity;
 import com.digw.it.activity.SettingActivity;
 
@@ -92,7 +93,7 @@ public class MeFragment extends BaseFragment {
                 break;
             case R.id.punch_card:
                 //我的打卡
-                startActivity(new Intent(getActivity(), LoginActivity.class));
+               startActivity(new Intent(getActivity(), Clock_Activity.class));
                 break;
             case R.id.set_tv:
                 startActivity(new Intent(getActivity(), SettingActivity.class));
