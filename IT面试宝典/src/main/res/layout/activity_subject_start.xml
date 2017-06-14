@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.digw.it.activity.NewsInfoActivity">
-
+    android:orientation="vertical"
+    tools:context="com.digw.it.activity.SubjectStartActivity">
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -17,19 +17,9 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:titleTextColor="#fff" />
-
-    <WebView
-        android:id="@+id/web_view"
+    
+    <android.support.v4.view.ViewPager
+        android:id="@+id/subject_vp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </WebView>
-    <ProgressBar
-        android:visibility="gone"
-        android:layout_below="@id/toolbar"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:id="@+id/loading_progress"
-        android:tag="tint_primary_color"
-        android:layout_width="match_parent"
-        android:layout_height="3dp" />
-</RelativeLayout>
+        android:layout_height="match_parent" />
+</LinearLayout>

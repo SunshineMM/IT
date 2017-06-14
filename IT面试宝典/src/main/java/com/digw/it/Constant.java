@@ -17,6 +17,7 @@ public class Constant {
     public static final String URL_POST_TITLE=URL_HOST+"getMenuTitle.php";
     public static final String URL_POST_USER_REGISTER=URL_HOST+"doRegister.php";
     public static final String URL_POST_USER_LOGIN=URL_HOST+"doLogin.php";
+    public static final String URL_POST_REQUEST_QUESTION=URL_HOST+"getQuestion.php";
 
     //新闻
     public static String NEWS_GROUP="T1348649580692";//IT
@@ -32,6 +33,10 @@ public class Constant {
     public static final String REGISTER_REQUEST_KEY_PASSWORD="password";
     public static final String REGISTER_REQUEST_KEY_EMAIL="email";
     public static final String REGISTER_REQUEST_KEY_SEX="sex";
+
+    public static final String QUESTION_REQUEST_KEY_COUNT="questionCount";
+    public static final int QUESTION_REQUEST_COUNT=10;
+    public static final String QUESTION_REQUEST_KEY_TAGID="tagIds";
 
     public static class UserTable{
         public static String id="u_id";

@@ -4,4 +4,9 @@
     <string name="title_information">资讯</string>
     <string name="title_me">我</string>
     <string name="title_activity_settings">设置</string>
+    <string-array name="fontsize">
+        <item>小</item>
+        <item>中</item>
+        <item>大</item>
+    </string-array>
 </resources>

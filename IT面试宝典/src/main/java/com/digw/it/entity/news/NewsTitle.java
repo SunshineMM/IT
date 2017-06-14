@@ -1,4 +1,4 @@
-package com.digw.it.entity;
+package com.digw.it.entity.news;
 
 import java.io.Serializable;
 

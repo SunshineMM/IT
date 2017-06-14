@@ -1,25 +1,31 @@
 package com.digw.it.activity;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
-import android.util.Log;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.digw.it.R;
+import com.digw.it.adapter.QuestionViewPagerAdapter;
+import com.digw.it.entity.question.QuestionInfo;
+import com.digw.it.entity.question.QuestionRequestResult;
+import com.digw.it.fragment.SubjectFragment;
 
-/**
- * digw创建于17-6-13.
- */
+import java.util.ArrayList;
 
-public class SettingActivity extends BaseActivity {
+public class SubjectStartActivity extends BaseActivity {
+    private ArrayList<Fragment> fragments = new ArrayList<>();
+    private QuestionViewPagerAdapter adapter;
+    private Toolbar toolbar;
+    private ViewPager viewPager;
+    private QuestionRequestResult qrr;
+
     @Override
     public void viewClick(View v) {
 
@@ -36,7 +42,11 @@ public class SettingActivity extends BaseActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
         }
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        qrr= (QuestionRequestResult) bundle.getSerializable("question");
+        for (QuestionInfo qi:qrr.getAllQuestion()) {
+            fragments.add(SubjectFragment.newInstance(qi));
+        }
+        adapter=new QuestionViewPagerAdapter(getSupportFragmentManager(),fragments);
     }
 
     @Override
@@ -46,12 +56,15 @@ public class SettingActivity extends BaseActivity {
 
     @Override
     public int bindLayout() {
-        return R.layout.activity_settings;
+        return R.layout.activity_subject_start;
     }
 
     @Override
     public void initView(View view) {
-
+        toolbar=$(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        viewPager=$(R.id.subject_vp);
+        viewPager.setAdapter(adapter);
     }
 
     @Override
@@ -61,26 +74,6 @@ public class SettingActivity extends BaseActivity {
 
     @Override
     public void doBusiness(Context mContext) {
-        getFragmentManager().beginTransaction().replace(R.id.content_frame, new SettingFragment()).commit();
-        SettingFragment frag = (SettingFragment) getFragmentManager().findFragmentById(R.id.content_frame);
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        Log.e("666",sp.getBoolean("wifi",false)+"");
-
-    }
-
-
-    public static class SettingFragment extends PreferenceFragment{
-
-        @Override
-        public void onCreate(@Nullable Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_settings);
-        }
-
-        @Override
-        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-            super.onViewCreated(view, savedInstanceState);
-        }
 
     }
 }
