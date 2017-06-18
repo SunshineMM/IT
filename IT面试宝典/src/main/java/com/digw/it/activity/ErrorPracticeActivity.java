@@ -3,7 +3,6 @@ package com.digw.it.activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.Window;
 import android.widget.LinearLayout;
 
 import com.digw.it.R;
@@ -21,7 +20,6 @@ public class ErrorPracticeActivity extends AppCompatActivity implements View.OnC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_error_practice);
 
         initview();

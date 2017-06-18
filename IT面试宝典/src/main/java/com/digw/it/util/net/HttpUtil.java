@@ -7,6 +7,7 @@ import com.digw.it.util.net.progress.ProgressRequestBody;
 import com.digw.it.util.net.progress.ProgressResponseBody;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -25,15 +26,20 @@ import okhttp3.Response;
  */
 
 public class HttpUtil {
+    public static String UserAgent=null;
 
     public static OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).readTimeout(5, TimeUnit.SECONDS).build();
 
-    public static void doGet(String urlPath, final NetListener.HttpCallbackListener listener){
-        doGet(null,urlPath,listener);
+    public static void doGetEnqueue(String urlPath, final NetListener.HttpCallbackListener listener){
+        doGetEnqueue(null,urlPath,listener);
     }
 
-    public static void doGet(final Activity activity, String urlPath, final NetListener.HttpCallbackListener listener) {
-        Request request = new Request.Builder().url(urlPath).addHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36").build();
+    public static void doGetEnqueue(final Activity activity, String urlPath, final NetListener.HttpCallbackListener listener) {
+        Request request=null;
+        if (null!=UserAgent)
+            request = new Request.Builder().url(urlPath).addHeader("User-Agent", UserAgent).build();
+        else
+            request = new Request.Builder().url(urlPath).build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
@@ -79,11 +85,40 @@ public class HttpUtil {
         });
     }
 
-    public static void doPost(String urlPath, Map<String, String> params, final NetListener.HttpCallbackListener listener){
-        doPost(null,urlPath,params,listener);
+    public static String doGetExecute(String urlPath,Map<String, String> params){
+        ArrayList<String> paramList=new ArrayList<>();
+        urlPath+="?";
+        if (null != params) {
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                paramList.add(entry.getKey()+"="+entry.getValue());
+            }
+        }
+        for (int i=0;i<paramList.size();i++){
+            if (i==0){
+                urlPath+=paramList.get(i);
+            }else {
+                urlPath+="&"+paramList.get(i);
+            }
+        }
+        Request request=null;
+        if (null!=UserAgent)
+            request = new Request.Builder().url(urlPath).addHeader("User-Agent", UserAgent).build();
+        else
+            request = new Request.Builder().url(urlPath).build();
+        String result=null;
+        try {
+            result=okHttpClient.newCall(request).execute().body().string();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
-    public static void doPost(final Activity activity, String urlPath, Map<String, String> params, final NetListener.HttpCallbackListener listener) {
+    public static void doPostEnqueue(String urlPath, Map<String, String> params, final NetListener.HttpCallbackListener listener){
+        doPostEnqueue(null,urlPath,params,listener);
+    }
+
+    public static void doPostEnqueue(final Activity activity, String urlPath, Map<String, String> params, final NetListener.HttpCallbackListener listener) {
         FormBody.Builder builder = new FormBody.Builder();
         if (null != params) {
             for (Map.Entry<String, String> entry : params.entrySet()) {
@@ -91,7 +126,11 @@ public class HttpUtil {
             }
         }
         RequestBody requestBody = builder.build();
-        Request request = new Request.Builder().url(urlPath).post(requestBody).build();
+        Request request=null;
+        if (null!=UserAgent)
+            request = new Request.Builder().url(urlPath).addHeader("User-Agent", UserAgent).post(requestBody).build();
+        else
+            request = new Request.Builder().url(urlPath).post(requestBody).build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
@@ -134,6 +173,28 @@ public class HttpUtil {
                 }
             }
         });
+    }
+
+    public static String doPostExecute(String urlPath, Map<String, String> params){
+        String result=null;
+        FormBody.Builder builder = new FormBody.Builder();
+        if (null != params) {
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                builder.add(entry.getKey(), entry.getValue());
+            }
+        }
+        RequestBody requestBody = builder.build();
+        Request request=null;
+        if (null!=UserAgent)
+            request = new Request.Builder().url(urlPath).addHeader("User-Agent", UserAgent).post(requestBody).build();
+        else
+            request = new Request.Builder().url(urlPath).post(requestBody).build();
+        try {
+            result=okHttpClient.newCall(request).execute().body().string();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     public static void doPostUploadFileOnProgress(String urlPath, MultipartBody requestBody, final NetListener.HttpCallbackProgressListener listener) {

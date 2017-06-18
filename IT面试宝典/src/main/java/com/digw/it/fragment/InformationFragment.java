@@ -84,7 +84,7 @@ public class InformationFragment extends BaseFragment implements SwipeRefreshLay
         adapter.notifyItemRangeRemoved(0,ITApplication.getInstance().newsTitles.size());
         ITApplication.getInstance().newsTitles.clear();
         //获取资讯列表
-        HttpUtil.doGet(Constant.URL_GET_NEWS_LIST, new NetListener.HttpCallbackListener() {
+        HttpUtil.doGetEnqueue(Constant.URL_GET_NEWS_LIST, new NetListener.HttpCallbackListener() {
             @Override
             public void onFinish(Response response) {
                 String result=null;

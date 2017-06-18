@@ -7,7 +7,7 @@ import android.view.View;
 import com.digw.it.R;
 
 
-public class Download extends BaseActivity {
+public class DownloadActivity extends BaseActivity {
 
 
     @Override

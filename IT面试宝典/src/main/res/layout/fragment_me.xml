@@ -22,7 +22,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:orientation="horizontal">
-                <ImageView
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/civ_user_icon"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
@@ -33,13 +34,14 @@
                     android:layout_weight="3"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
+
                     <TextView
+                        android:id="@+id/tv_username"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:text="请登录后查看"
-                        android:textSize="18sp"
-                        />
+                        android:textSize="18sp" />
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dp"

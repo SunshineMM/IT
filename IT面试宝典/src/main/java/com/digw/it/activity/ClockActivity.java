@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import com.digw.it.R;
 
-public class Clock_Activity extends BaseActivity  {
+public class ClockActivity extends BaseActivity  {
     private Button button1,button2;
     private TextView textView;
     private ImageView imageView;
@@ -22,10 +22,10 @@ public class Clock_Activity extends BaseActivity  {
     public void viewClick(View v) {
         switch (v.getId()) {
             case R.id.vip:
-                Toast.makeText(Clock_Activity.this,"请充值",Toast.LENGTH_SHORT).show();
+                Toast.makeText(ClockActivity.this,"请充值",Toast.LENGTH_SHORT).show();
                 break;
             case R.id.pu:
-                Toast.makeText(Clock_Activity.this,"你已签到成功",Toast.LENGTH_SHORT).show();
+                Toast.makeText(ClockActivity.this,"你已签到成功",Toast.LENGTH_SHORT).show();
                 textView.setText("签到成功  +1");
                 textView.setTextColor(Color.GREEN);
                 imageView.setImageResource(R.drawable.k);

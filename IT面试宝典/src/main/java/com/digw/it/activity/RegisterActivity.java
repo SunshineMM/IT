@@ -10,16 +10,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.digw.it.Constant;
 import com.digw.it.R;
-import com.digw.it.util.StringEncrypt;
 import com.digw.it.util.ThreadManager;
 import com.digw.it.util.net.HttpUtil;
 
@@ -27,21 +29,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import okhttp3.FormBody;
-import okhttp3.Request;
-import okhttp3.RequestBody;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterActivity extends BaseActivity implements TextureView.SurfaceTextureListener {
     private TextureView textureView;
     private MediaPlayer mediaPlayer;
     private Surface mSurface;
 
-    private TextInputLayout tilRegUserName,tilRegPassWord,tilRegCheckPassWord,tilRegEmail;
+    private TextInputLayout tilRegPhone,tilRegCode,tilRegPassWord;
+    private TextView tvCode;
     private Button regBtn;
     private ProgressDialog pd;
+
     private Thread thread=new Thread(){
         @Override
         public void run() {
@@ -65,49 +65,56 @@ public class RegisterActivity extends BaseActivity implements TextureView.Surfac
         }
     };
 
+    private Thread timeThread=new Thread(){
+        @Override
+        public void run() {
+            for (int i = 59; i >= 0; i--) {
+                try {
+                    sleep(1000);
+                    final int finalI = i;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (finalI==0){
+                                tvCode.setText("获取验证码");
+                                tvCode.setOnClickListener(RegisterActivity.this);
+                            }else {
+                                tvCode.setText(finalI +"秒");
+                            }
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
+
     private void cleanEditTextError(){
-        tilRegUserName.setError(null);
+        tilRegPhone.setError(null);
+        tilRegCode.setError(null);
         tilRegPassWord.setError(null);
-        tilRegCheckPassWord.setError(null);
-        tilRegEmail.setError(null);
     }
 
     private boolean checkFrom(){
-        String emailReg="^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$";
-        String regUserName=tilRegUserName.getEditText().getText().toString().trim();
+        String regPhone=tilRegPhone.getEditText().getText().toString().trim();
+        String regCode=tilRegCode.getEditText().getText().toString().trim();
         String regPassword=tilRegPassWord.getEditText().getText().toString().trim();
-        String regCheckPassWord=tilRegCheckPassWord.getEditText().getText().toString().trim();
-        String regEmail=tilRegEmail.getEditText().getText().toString().trim();
-        if (TextUtils.isEmpty(regUserName)){
-            tilRegUserName.setError("用户名不能为空");
+        if (TextUtils.isEmpty(regPhone)){
+            tilRegPhone.setError("手机号不能为空");
             return false;
         }
-        if (regUserName.length()<4||regUserName.length()>9){
-            tilRegUserName.setError("用户名必须大于等于4位,小于等于8位字符");
+        if (TextUtils.isEmpty(regCode)){
+            tilRegCode.setError("验证码不能为空");
             return false;
         }
         if (TextUtils.isEmpty(regPassword)){
             tilRegPassWord.setError("密码不能为空");
             return false;
         }
-        if (regPassword.length()<6||regPassword.length()>16){
-            tilRegPassWord.setError("密码必须大于等于6位,小于等于16位字符");
+        if (regPassword.length()<6||regPassword.length()>21){
+            tilRegPassWord.setError("密码必须为6到20位字符");
             return false;
-        }
-        if (TextUtils.isEmpty(regCheckPassWord)){
-            tilRegCheckPassWord.setError("确认密码不能为空");
-            return false;
-        }
-        if (!regPassword.equals(regCheckPassWord)){
-            tilRegCheckPassWord.setError("确认密码和密码不一致");
-        }
-        Pattern p = Pattern.compile(emailReg);
-        Matcher matcher=p.matcher(regEmail);
-        if (TextUtils.isEmpty(regEmail)){
-            tilRegEmail.setError("电子邮件不能为空");
-        }
-        if (!matcher.matches()){
-            tilRegEmail.setError("电子邮件格式错误");
         }
         return true;
     }
@@ -119,8 +126,16 @@ public class RegisterActivity extends BaseActivity implements TextureView.Surfac
                 cleanEditTextError();
                 if (checkFrom()){
                     UserRegisterAsyncTask task=new UserRegisterAsyncTask();
-                    task.execute(tilRegUserName.getEditText().getText().toString().trim(),tilRegPassWord.getEditText().getText().toString().trim(),tilRegEmail.getEditText().getText().toString().trim());
+                    task.execute(
+                            tilRegPhone.getEditText().getText().toString().trim(),
+                            tilRegCode.getEditText().getText().toString().trim(),
+                            tilRegPassWord.getEditText().getText().toString().trim()
+                    );
                 }
+                break;
+            case R.id.register_code_tv:
+                CheckPhoneAsyncTask task=new CheckPhoneAsyncTask();
+                task.execute(tilRegPhone.getEditText().getText().toString().trim());
                 break;
         }
     }
@@ -143,10 +158,10 @@ public class RegisterActivity extends BaseActivity implements TextureView.Surfac
     @Override
     public void initView(View view) {
         textureView=$(R.id.texture_view);
-        tilRegUserName=$(R.id.register_username);
+        tilRegPhone=$(R.id.register_phone);
+        tilRegCode=$(R.id.register_code);
         tilRegPassWord=$(R.id.register_password);
-        tilRegCheckPassWord=$(R.id.register_check_password);
-        tilRegEmail=$(R.id.register_email);
+        tvCode=$(R.id.register_code_tv);
         regBtn=$(R.id.register_btn);
         pd=new ProgressDialog(this);
         pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -158,12 +173,67 @@ public class RegisterActivity extends BaseActivity implements TextureView.Surfac
     @Override
     public void setListener() {
         textureView.setSurfaceTextureListener(this);
+        tvCode.setOnClickListener(this);
         regBtn.setOnClickListener(this);
+        tilRegPhone.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                tilRegPhone.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        tilRegCode.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                tilRegCode.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        tilRegPassWord.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                tilRegPassWord.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 
     @Override
     public void doBusiness(Context mContext) {
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        pd.dismiss();
     }
 
     @Override
@@ -179,7 +249,6 @@ public class RegisterActivity extends BaseActivity implements TextureView.Surfac
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         mSurface=new Surface(surface);
         ThreadManager.getPoolProxy().execute(thread);
-        //thread.start();
     }
 
     @Override
@@ -201,7 +270,7 @@ public class RegisterActivity extends BaseActivity implements TextureView.Surfac
 
     }
 
-    private class UserRegisterAsyncTask extends AsyncTask<String,Integer,String>{
+    private class CheckPhoneAsyncTask extends AsyncTask<String,Void,String>{
 
         @Override
         protected void onPreExecute() {
@@ -210,18 +279,16 @@ public class RegisterActivity extends BaseActivity implements TextureView.Surfac
 
         @Override
         protected String doInBackground(String... params) {
-            String result = "";
-            JSONObject userJson;
-            FormBody.Builder builder = new FormBody.Builder();
-            builder.add(Constant.REGISTER_REQUEST_KEY_USERNAME, params[0]);
-            builder.add(Constant.REGISTER_REQUEST_KEY_PASSWORD, StringEncrypt.encrypt(params[1]));
-            builder.add(Constant.REGISTER_REQUEST_KEY_EMAIL, params[2]);
-            /*builder.add(Constant.REGISTER_REQUEST_KEY_SEX, params[3]);*/
-            RequestBody requestBody = builder.build();
-            Request request = new Request.Builder().url(Constant.URL_POST_USER_REGISTER).post(requestBody).build();
+            Map<String,String> map=new HashMap<>();
+            map.put(Constant.CHECK_PHONE_REQUEST_KEY_PHONE,params[0]);
+            String result=HttpUtil.doGetExecute(Constant.URL_GET_CHECK_PHONE,map);
             try {
-                result = HttpUtil.okHttpClient.newCall(request).execute().body().string();
-            } catch (IOException e) {
+                JSONObject resultJson=new JSONObject(result);
+                if (resultJson.getInt("code")==0){
+                    HttpUtil.UserAgent=Constant.URL_NOWCODER_USER_AGENT;
+                    result=HttpUtil.doPostExecute(Constant.URL_POST_SEND_CHECK_PHONE,map);
+                }
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
             return result;
@@ -229,23 +296,65 @@ public class RegisterActivity extends BaseActivity implements TextureView.Surfac
 
         @Override
         protected void onPostExecute(String s) {
+            pd.dismiss();
             try {
-                pd.dismiss();
-                JSONObject obj = new JSONObject(s);
-                if (obj.getBoolean("state")) {
-                    Snackbar.make(textureView, "注册成功,3秒后返回登录界面", Snackbar.LENGTH_SHORT).show();
+                JSONObject resultJson=new JSONObject(s);
+                if (resultJson.getInt("code")==0){
+                    tvCode.setOnClickListener(null);
+                    ThreadManager.getPoolProxy().execute(timeThread);
+                    return;
+                }
+                tilRegPhone.setError(resultJson.getString("msg"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    private class UserRegisterAsyncTask extends AsyncTask<String,Void,String>{
+        @Override
+        protected void onPreExecute() {
+            pd.show();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            Map<String,String> map=new HashMap<>();
+            map.put(Constant.REGISTER_REQUEST_KEY_PHONE,strings[0]);
+            map.put(Constant.REGISTER_REQUEST_KEY_CODE,strings[1]);
+            map.put(Constant.REGISTER_REQUEST_KEY_PASSWORD,strings[2]);
+            return HttpUtil.doPostExecute(Constant.URL_POST_USER_REGISTER,map);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            try {
+                JSONObject result=new JSONObject(s);
+                if (result.getInt("code")==0){
+                    Snackbar.make(tvCode,"注册成功,三秒后跳转到登录页面",Snackbar.LENGTH_SHORT).show();
                     (new Handler()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            startActivity(LoginActivity.class);
-                            RegisterActivity.this.finish();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    RegisterActivity.this.finish();
+                                }
+                            });
                         }
-                    }, 2500);
-                } else {
-                    Snackbar.make(textureView, "注册失败,"+obj.getString("msg"), Snackbar.LENGTH_SHORT).show();
+                    },2500);
+                }else if (result.getString("msg").contains("手机")){
+                    tilRegPhone.setError(result.getString("msg"));
+                }else if (result.getString("msg").contains("验证码")){
+                    tilRegCode.setError(result.getString("msg"));
+                }else if (result.getString("msg").contains("密码")){
+                    tilRegPassWord.setError(result.getString("msg"));
+                }else {
+                    Snackbar.make(tvCode,result.getString("msg"),Snackbar.LENGTH_SHORT).show();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+            } finally {
+                pd.dismiss();
             }
         }
     }

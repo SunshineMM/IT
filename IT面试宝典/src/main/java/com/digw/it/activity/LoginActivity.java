@@ -10,7 +10,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
@@ -21,6 +23,7 @@ import com.digw.it.Constant;
 import com.digw.it.ITApplication;
 import com.digw.it.R;
 import com.digw.it.entity.User;
+import com.digw.it.util.JsonUtil;
 import com.digw.it.util.ThreadManager;
 import com.digw.it.util.net.HttpUtil;
 
@@ -28,20 +31,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.HashMap;
+import java.util.Map;
 
-import okhttp3.FormBody;
-import okhttp3.Request;
-import okhttp3.RequestBody;
+import static com.digw.it.Constant.UserTable.email;
 
-public class LoginActivity extends BaseActivity implements TextureView.SurfaceTextureListener, View.OnFocusChangeListener {
+public class LoginActivity extends BaseActivity implements TextureView.SurfaceTextureListener {
     private TextureView textureView;
     private MediaPlayer mediaPlayer;
     private Surface mSurface;
 
     private View bgView;
-    private TextInputLayout tilUserName, tilPassWord;
+    private TextInputLayout tilPhone, tilPassWord;
     private TextView tvRegister;
     private Button btnLogin;
     private ProgressDialog pd;
@@ -69,30 +70,23 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
     };
 
     private void cleanEditTextError(){
-        tilUserName.setError(null);
+        tilPhone.setError(null);
         tilPassWord.setError(null);
     }
 
     private boolean checkFrom() {
-        String emailReg="^([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)$";
-        String email=tilUserName.getEditText().getText().toString().trim();
+        String phone=tilPhone.getEditText().getText().toString().trim();
         String password=tilPassWord.getEditText().getText().toString().trim();
         if (TextUtils.isEmpty(email)){
-            tilUserName.setError("电子邮件不能为空");
-            return false;
-        }
-        Pattern p = Pattern.compile(emailReg);
-        Matcher matcher=p.matcher(email);
-        if (!matcher.matches()){
-            tilUserName.setError("电子邮件格式错误");
+            tilPhone.setError("手机号不能为空");
             return false;
         }
         if (TextUtils.isEmpty(password)){
             tilPassWord.setError("密码不能为空");
             return false;
         }
-        if (!(password.length()>=6 && password.length() <= 16)){
-            tilPassWord.setError("密码必须大于等于6位并小于等于17位");
+        if (password.length()<6||password.length()>21){
+            tilPassWord.setError("密码必须为6到20位字符");
             return false;
         }
         return true;
@@ -108,7 +102,10 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
                 cleanEditTextError();
                 if (checkFrom()){
                     UserLoginAsyncTask m = new UserLoginAsyncTask();
-                    m.execute(tilUserName.getEditText().getText().toString(), tilPassWord.getEditText().getText().toString());
+                    m.execute(
+                            tilPhone.getEditText().getText().toString(),
+                            tilPassWord.getEditText().getText().toString()
+                    );
                 }
                 break;
         }
@@ -133,7 +130,7 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
     public void initView(View view) {
         textureView = $(R.id.texture_view);
         bgView = $(R.id.bg_view);
-        tilUserName = $(R.id.login_username);
+        tilPhone = $(R.id.login_phone);
         tilPassWord = $(R.id.login_password);
         btnLogin = $(R.id.login_btn);
         tvRegister = $(R.id.tv_register);
@@ -141,7 +138,7 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
         pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         pd.setCancelable(false);
         pd.setCanceledOnTouchOutside(false);
-        pd.setMessage("请稍后");
+        pd.setMessage("请稍后...");
     }
 
     @Override
@@ -149,8 +146,38 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
         textureView.setSurfaceTextureListener(this);
         tvRegister.setOnClickListener(this);
         btnLogin.setOnClickListener(this);
-        /*tilUserName.getEditText().setOnFocusChangeListener(this);
-        tilPassWord.getEditText().setOnFocusChangeListener(this);*/
+        tilPhone.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                tilPhone.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        tilPassWord.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                tilPassWord.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 
     @Override
@@ -183,15 +210,6 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
 
     }
 
-    @Override
-    public void onFocusChange(View v, boolean hasFocus) {
-        if (v.getId()==tilUserName.getEditText().getId()&&hasFocus){
-            tilUserName.setError(null);
-        }else if (v.getId()==tilPassWord.getEditText().getId()&&hasFocus){
-            tilPassWord.setError(null);
-        }
-    }
-
     private class UserLoginAsyncTask extends AsyncTask<String, Integer, String> {
 
         @Override
@@ -201,14 +219,10 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
 
         @Override
         protected String doInBackground(String... params) {
-            String result = "";
-            JSONObject userJson;
-            FormBody.Builder builder = new FormBody.Builder();
-            builder.add(Constant.LOGIN_REQUEST_KEY_USERNAME, params[0]);
-            builder.add(Constant.LOGIN_REQUEST_KEY_PASSWORD, params[1]);
-            RequestBody requestBody = builder.build();
-            Request request = new Request.Builder().url(Constant.URL_POST_USER_LOGIN).post(requestBody).build();
-            try {
+            Map<String,String> map=new HashMap<>();
+            map.put(Constant.LOGIN_REQUEST_KEY_ACCOUNT, params[0]);
+            map.put(Constant.LOGIN_REQUEST_KEY_PASSWORD, params[1]);
+            /*try {
                 result = HttpUtil.okHttpClient.newCall(request).execute().body().string();
                 userJson = new JSONObject(result);
                 userJson = userJson.getJSONObject("result");
@@ -222,17 +236,17 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
                 ITApplication.getInstance().setCurrUser(user);
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
-            }
-            return result;
+            }*/
+            return HttpUtil.doPostExecute(Constant.URL_POST_USER_LOGIN,map);
         }
 
         @Override
         protected void onPostExecute(String s) {
             try {
-                pd.dismiss();
-                JSONObject obj = new JSONObject(s);
-                if (obj.getBoolean("state")) {
-                    Snackbar.make(bgView, "登录成功,3秒后返回上一页", Snackbar.LENGTH_SHORT).show();
+                JSONObject result = new JSONObject(s);
+                if (result.getInt("code")==0) {
+                    ITApplication.getInstance().setCurrUser(JsonUtil.jsonToBean(result.getJSONObject("data").toString(), User.class));
+                    Snackbar.make(bgView, "登录成功,三秒后返回上一页", Snackbar.LENGTH_SHORT).show();
                     (new Handler()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -240,10 +254,14 @@ public class LoginActivity extends BaseActivity implements TextureView.SurfaceTe
                         }
                     }, 2500);
                 } else {
-                    Snackbar.make(bgView, "登录失败", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(bgView,result.getString("msg"),Snackbar.LENGTH_SHORT).show();
+                    tilPhone.setError(" ");
+                    tilPassWord.setError(" ");
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+            } finally {
+                pd.dismiss();
             }
         }
     }

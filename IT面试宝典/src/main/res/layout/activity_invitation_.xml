@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.digw.it.activity.Invitation_Activity">
+    tools:context="com.digw.it.activity.InvitationActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

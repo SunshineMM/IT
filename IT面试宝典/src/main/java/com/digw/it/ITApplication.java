@@ -5,10 +5,11 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
+import android.util.Log;
 
+import com.digw.it.entity.User;
 import com.digw.it.entity.news.NewsTitle;
 import com.digw.it.entity.question.GroupTitle;
-import com.digw.it.entity.User;
 import com.digw.it.util.JsonUtil;
 import com.digw.it.util.net.HttpUtil;
 import com.digw.it.util.net.NetListener;
@@ -18,7 +19,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +39,7 @@ public class ITApplication extends Application {
     private static ITApplication Instance = null;
     private List<Activity> activities = new ArrayList<>();
     private User currUser=null;
+    public boolean LoginFlag=false;
     public SharedPreferences userPrf=null;
     public ArrayList<GroupTitle> titles = new ArrayList<>();
     public ArrayList<NewsTitle> newsTitles= new ArrayList<>();
@@ -49,31 +56,41 @@ public class ITApplication extends Application {
 
     public void setCurrUser(User currUser) {
         this.currUser = currUser;
-        SharedPreferences.Editor editor=userPrf.edit();
-        editor.putInt("id",currUser.getId());
-        editor.putString("name",currUser.getName());
-        editor.putInt("type",currUser.getType());
-        editor.putString("email",currUser.getEmail());
-        editor.putString("sex",currUser.getSex());
-        editor.putString("password",currUser.getPassword());
-        editor.apply();
+        LoginFlag=true;
+        File fileDir=getFilesDir();
+        File userObj=new File(fileDir,"userObj");
+        if (userObj.exists()){
+            userObj.delete();
+        }
+        try {
+            FileOutputStream fos=new FileOutputStream(userObj);
+            ObjectOutputStream oos=new ObjectOutputStream(fos);
+            oos.writeObject(currUser);
+            oos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void init(final Handler handler){
 
         //判断用户是否登录
-        if (userPrf.getInt("id",-1)!=-1){
-            currUser=new User();
-            currUser.setId(userPrf.getInt("id",-1));
-            currUser.setName(userPrf.getString("name",""));
-            currUser.setType(userPrf.getInt("type",-1));
-            currUser.setEmail(userPrf.getString("email",""));
-            currUser.setSex(userPrf.getString("sex",""));
-            currUser.setPassword(userPrf.getString("password",""));
+        File userObj=new File(getFilesDir(),"userObj");
+        if (userObj.exists()){
+            LoginFlag=true;
+            try {
+                FileInputStream fis=new FileInputStream(userObj);
+                ObjectInputStream ois=new ObjectInputStream(fis);
+                currUser= (User) ois.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            Log.e("TAG", "init: 用户"+currUser.getNickname()+"已登录");
         }
 
         //获取标题数据
-        HttpUtil.doPost(Constant.URL_POST_TITLE, null, new NetListener.HttpCallbackListener() {
+        HttpUtil.UserAgent=Constant.URL_NOWCODER_USER_AGENT;
+        HttpUtil.doPostEnqueue(Constant.URL_POST_TITLE, null, new NetListener.HttpCallbackListener() {
             @Override
             public void onFinish(Response response) {
                 try {

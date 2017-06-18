@@ -41,10 +41,17 @@
         <activity
             android:name=".activity.SettingActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".activity.Shoum" />
-        <activity android:name=".activity.Collect_Activity" />
-        <activity android:name=".activity.Invitation_Activity" />
-        <activity android:name=".activity.Clock_Activity"></activity>
+        <activity android:name=".activity.SubjectStartActivity" />
+        <activity
+            android:name=".activity.ErrorPracticeActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
+            android:name=".activity.ErrorBrowseActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity android:name=".activity.DownloadActivity" />
+        <activity android:name=".activity.CollectActivity" />
+        <activity android:name=".activity.InvitationActivity" />
+        <activity android:name=".activity.ClockActivity"></activity>
     </application>
 
 </manifest>
